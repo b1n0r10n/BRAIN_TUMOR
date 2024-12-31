@@ -62,7 +62,7 @@ def predict_brain_tumor(img: Image.Image):
 # ==========================================
 # Streamlit App
 # ==========================================
-st.title("Prediksi Tumor Otak dengan CNN (Tanpa GPU Config)")
+st.title("Deteksi Tumor Otak dengan AI")
 st.write("""
 Aplikasi ini menggunakan model CNN untuk memprediksi apakah gambar MRI 
 termasuk kategori Glioma, Meningioma, No Tumor, atau Pituitary.
