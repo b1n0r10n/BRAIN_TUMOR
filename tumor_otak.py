@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from PIL import Image
 import os
+import pandas as pd  # Untuk visualisasi dan download data
 
 # ==========================================
 # Load Model (tanpa konfigurasi GPU)
@@ -77,11 +78,11 @@ def predict_brain_tumor(img: Image.Image):
         label = CLASS_LABELS.get(predicted_class, "Unknown")
         prob_percent = preds[0][predicted_class] * 100
         
-        return label, prob_percent
+        return label, prob_percent, preds
     
     except Exception as e:
         st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
-        return None, None
+        return None, None, None
 
 # ==========================================
 # Streamlit App
@@ -110,7 +111,7 @@ Silakan upload gambar MRI di bawah ini untuk deteksi.
 uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
 
 # ==========================================
-# 4. Tampilkan Gambar dan Tombol Prediksi
+# 4. Tampilkan Gambar, Prediksi, dan Fitur Tambahan
 # ==========================================
 if uploaded_file is not None:
     try:
@@ -123,11 +124,47 @@ if uploaded_file is not None:
         # Tombol prediksi
         if st.button("Prediksi"):
             with st.spinner("Melakukan prediksi..."):
-                label, prob = predict_brain_tumor(image_pil)
+                label, prob, preds = predict_brain_tumor(image_pil)
             
             if label is not None:
+                # Menampilkan hasil prediksi
                 st.success(f"Hasil Prediksi: **{label}**")
                 st.info(f"Probabilitas: **{prob:.2f}%**")
                 
+                # -------------------------------------------
+                # 4.1 Menambahkan Visualisasi Probabilitas
+                # -------------------------------------------
+                st.write("Probabilitas untuk setiap kelas:")
+                prob_dict = CLASS_LABELS
+                prob_values = preds[0] * 100
+                prob_labels = [CLASS_LABELS[k] for k in prob_dict.keys()]
+                
+                # Membuat DataFrame untuk visualisasi
+                df_probs = pd.DataFrame({
+                    'Kelas': prob_labels,
+                    'Probabilitas (%)': prob_values
+                }).set_index('Kelas')
+                
+                # Menampilkan grafik batang
+                st.bar_chart(df_probs)
+                
+                # -------------------------------------------
+                # 4.2 Menambahkan Opsi Download Hasil Prediksi
+                # -------------------------------------------
+                st.write("Anda dapat mendownload hasil prediksi dalam bentuk file CSV.")
+                
+                # Membuat DataFrame untuk hasil prediksi
+                df_result = pd.DataFrame({
+                    'Label': [label],
+                    'Probabilitas (%)': [prob]
+                })
+                
+                # Tombol download
+                st.download_button(
+                    label="Download Hasil Prediksi",
+                    data=df_result.to_csv(index=False),
+                    file_name='hasil_prediksi.csv',
+                    mime='text/csv',
+                )
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
