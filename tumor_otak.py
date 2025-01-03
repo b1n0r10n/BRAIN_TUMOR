@@ -133,9 +133,9 @@ if uploaded_file is not None:
                 # 4.5 Menambahkan Visualisasi Probabilitas
                 # -------------------------------------------
                 st.write("Probabilitas untuk setiap kelas:")
-                prob_dict = class_labels
+                prob_dict = CLASS_LABELS
                 prob_values = preds[0] * 100
-                prob_labels = [class_labels[k] for k in prob_dict.keys()]
+                prob_labels = [CLASS_LABELS[k] for k in prob_dict.keys()]
 
                 df_probs = pd.DataFrame({
                     'Kelas': prob_labels,
