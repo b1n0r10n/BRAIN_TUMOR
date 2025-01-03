@@ -131,7 +131,7 @@ if uploaded_file is not None:
 
 # Tambahkan Tombol untuk Kembali ke Website Utama (Selalu Ditampilkan di Bawah)
 st.markdown("""
-    <div style="position: fixed; bottom: 20px; width: 100%; text-align: center;">
+    <div style="position: fixed; bottom: 20px; left: 20px;">
         <a href="https://www.website-utama-anda.com" target="_self">
             <button style="
                 background-color:#4CAF50; 
