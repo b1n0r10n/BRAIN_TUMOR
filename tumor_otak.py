@@ -91,7 +91,7 @@ def predict_brain_tumor(img: Image.Image):
 # 1. Tambahkan Navigasi ke Website Utama
 # ==========================================
 st.sidebar.title("Navigasi")
-main_website_url = "https://www.website-utama-anda.com"  # Ganti dengan URL website utama Anda
+main_website_url = "https://k11-cnn-detection.vercel.app/"  # Ganti dengan URL website utama Anda
 st.sidebar.markdown(f"[🔙 Kembali ke Website Utama]({main_website_url})")
 
 # ==========================================
