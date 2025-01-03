@@ -87,3 +87,23 @@ if uploaded_file is not None:
         
         st.success(f"Hasil Prediksi: **{label}**")
         st.info(f"Probabilitas: **{prob:.2f}%**")
+
+ # Tambahkan tombol untuk kembali ke website utama
+        st.markdown("""
+            <a href="https://www.website-utama-anda.com" target="_self">
+                <button style="
+                    background-color:#4CAF50; 
+                    color:white; 
+                    padding:10px 20px; 
+                    border:none; 
+                    border-radius:5px; 
+                    cursor:pointer;
+                    font-size:16px;
+                    margin-top:20px;
+                ">
+                    Kembali ke Website Utama
+                </button>
+            </a>
+            """, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Gagal memproses gambar: {e}")
