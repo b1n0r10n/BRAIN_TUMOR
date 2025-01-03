@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from PIL import Image
 import os
+import matplotlib.pyplot as plt
 
 # ==========================================
 # Load Model (tanpa konfigurasi GPU)
@@ -77,11 +78,11 @@ def predict_brain_tumor(img: Image.Image):
         label = CLASS_LABELS.get(predicted_class, "Unknown")
         prob_percent = preds[0][predicted_class] * 100
         
-        return label, prob_percent
+        return label, prob_percent, preds[0]
     
     except Exception as e:
         st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
-        return None, None
+        return None, None, None
 
 # ==========================================
 # Streamlit App
@@ -92,24 +93,6 @@ Aplikasi ini menggunakan model CNN untuk deteksi apakah gambar MRI
 termasuk kategori **Glioma**, **Meningioma**, **No Tumor**, atau **Pituitary**.
 Silakan upload gambar MRI di bawah ini untuk deteksi.
 """)
-
-# Tambahkan Tombol untuk Kembali ke Website Utama (Selalu Ditampilkan)
-st.markdown("""
-    <a href="https://www.website-utama-anda.com" target="_self">
-        <button style="
-            background-color:#4CAF50; 
-            color:white; 
-            padding:10px 20px; 
-            border:none; 
-            border-radius:5px; 
-            cursor:pointer;
-            font-size:16px;
-            margin-top:20px;
-        ">
-            Kembali ke Website Utama
-        </button>
-    </a>
-    """, unsafe_allow_html=True)
 
 # Widget file_uploader untuk mengunggah gambar
 uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
@@ -126,7 +109,7 @@ if uploaded_file is not None:
         # Tombol prediksi
         if st.button("Prediksi"):
             with st.spinner("Melakukan prediksi..."):
-                label, prob = predict_brain_tumor(image_pil)
+                label, prob, preds = predict_brain_tumor(image_pil)
             
             if label is not None:
                 st.success(f"Hasil Prediksi: **{label}**")
@@ -136,7 +119,7 @@ if uploaded_file is not None:
                 st.write("### Probabilitas untuk Setiap Kelas:")
                 fig, ax = plt.subplots()
                 classes = list(CLASS_LABELS.values())
-                probabilities = preds.flatten() * 100  # Memperoleh semua probabilitas
+                probabilities = list(preds * 100)  # Memperoleh semua probabilitas
                 ax.bar(classes, probabilities, color='skyblue')
                 ax.set_ylim([0, 100])
                 ax.set_ylabel('Probabilitas (%)')
@@ -145,3 +128,22 @@ if uploaded_file is not None:
                 st.pyplot(fig)
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
+
+# Tambahkan Tombol untuk Kembali ke Website Utama (Selalu Ditampilkan di Bawah)
+st.markdown("""
+    <div style="position: fixed; bottom: 20px; width: 100%; text-align: center;">
+        <a href="https://www.website-utama-anda.com" target="_self">
+            <button style="
+                background-color:#4CAF50; 
+                color:white; 
+                padding:10px 20px; 
+                border:none; 
+                border-radius:5px; 
+                cursor:pointer;
+                font-size:16px;
+            ">
+                Kembali ke Website Utama
+            </button>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
