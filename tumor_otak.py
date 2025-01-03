@@ -64,9 +64,9 @@ def predict_brain_tumor(img: Image.Image):
 # ==========================================
 st.title("Brain Tumor Detection App")
 st.write("""
-Aplikasi ini menggunakan model CNN untuk memprediksi apakah gambar MRI 
+Aplikasi ini menggunakan model CNN untuk deteksi apakah gambar MRI 
 termasuk kategori Glioma, Meningioma, No Tumor, atau Pituitary.
-Silakan upload gambar MRI di bawah ini untuk diprediksi.
+Silakan upload gambar MRI di bawah ini untuk deteksi.
 """)
 
 # Widget file_uploader untuk mengunggah gambar
