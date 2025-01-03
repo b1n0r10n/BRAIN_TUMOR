@@ -98,23 +98,6 @@ Silakan upload gambar MRI di bawah ini untuk deteksi.
 col1, col2 = st.columns([1, 3])  # Rasio kolom bisa disesuaikan sesuai kebutuhan
 
 with col1:
-    st.markdown("""
-        <a href="https://www.website-utama-anda.com" target="_self">
-            <button style="
-                background-color:#4CAF50; 
-                color:white; 
-                padding:10px 20px; 
-                border:none; 
-                border-radius:5px; 
-                cursor:pointer;
-                font-size:16px;
-            ">
-                Kembali ke Website Utama
-            </button>
-        </a>
-        """, unsafe_allow_html=True)
-
-with col2:
     # Widget file_uploader untuk mengunggah gambar
     uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
 
@@ -164,7 +147,7 @@ st.markdown("""
                 cursor:pointer;
                 font-size:16px;
             ">
-                Kembali ke Website Utama haha
+                Kembali ke Website Utama 
             </button>
         </a>
     </div>
