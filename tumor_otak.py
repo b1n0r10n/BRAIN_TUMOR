@@ -6,7 +6,6 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from PIL import Image
 import os
-import matplotlib.pyplot as plt
 
 # ==========================================
 # Load Model (tanpa konfigurasi GPU)
@@ -15,7 +14,7 @@ import matplotlib.pyplot as plt
 def load_cnn_model():
     model_path = 'tumor_otak.h5'  # Sesuaikan dengan path model Anda
     if not os.path.exists(model_path):
-        st.error(f"Gagal memuat model: File tidak ditemukan di path {model_path}")
+        st.error(f"Gagal memuat model: File tidak ditemukan di path '{model_path}'")
         return None
     try:
         model = load_model(model_path)
@@ -49,11 +48,11 @@ def predict_brain_tumor(img: Image.Image):
     kemudian melakukan prediksi kelas tumor otak.
     """
     try:
-        # Pastikan gambar diubah ke RGB untuk memastikan 3 channel
-        img = img.convert("RGB")
-
         # Resize gambar ke (224, 224)
         img = img.resize((224, 224))
+        
+        # Pastikan gambar diubah ke RGB untuk memastikan 3 channel
+        img = img.convert("RGB")
         
         # Convert gambar menjadi array numpy
         img_array = image.img_to_array(img)
@@ -78,76 +77,56 @@ def predict_brain_tumor(img: Image.Image):
         label = CLASS_LABELS.get(predicted_class, "Unknown")
         prob_percent = preds[0][predicted_class] * 100
         
-        return label, prob_percent, preds[0]
+        return label, prob_percent
     
     except Exception as e:
         st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
-        return None, None, None
+        return None, None
 
 # ==========================================
 # Streamlit App
 # ==========================================
+
+# ==========================================
+# 1. Tambahkan Navigasi ke Website Utama
+# ==========================================
+st.sidebar.title("Navigasi")
+main_website_url = "https://www.website-utama-anda.com"  # Ganti dengan URL website utama Anda
+st.sidebar.markdown(f"[🔙 Kembali ke Website Utama]({main_website_url})")
+
+# ==========================================
+# 2. Judul dan Deskripsi Aplikasi
+# ==========================================
 st.title("Brain Tumor Detection App")
 st.write("""
-Aplikasi ini menggunakan model CNN untuk deteksi apakah gambar MRI 
-termasuk kategori **Glioma**, **Meningioma**, **No Tumor**, atau **Pituitary**.
+Aplikasi ini menggunakan model CNN untuk mendeteksi apakah gambar MRI 
+termasuk dalam kategori **Glioma**, **Meningioma**, **No Tumor**, atau **Pituitary**.
 Silakan upload gambar MRI di bawah ini untuk deteksi.
 """)
 
-# Widget file_uploader untuk mengunggah gambar
+# ==========================================
+# 3. Widget File Uploader
+# ==========================================
 uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
 
-# Tombol untuk melakukan prediksi
+# ==========================================
+# 4. Tampilkan Gambar dan Tombol Prediksi
+# ==========================================
 if uploaded_file is not None:
     try:
         # Baca file sebagai PIL Image
         image_pil = Image.open(uploaded_file)
-
-        # Tampilkan gambar yang diupload
+        
+        # Tampilkan gambar yang di-upload
         st.image(image_pil, caption="Gambar yang di-upload", use_column_width=True)
-
+        
         # Tombol prediksi
         if st.button("Prediksi"):
             with st.spinner("Melakukan prediksi..."):
-                label, prob, preds = predict_brain_tumor(image_pil)
+                label, prob = predict_brain_tumor(image_pil)
             
             if label is not None:
                 st.success(f"Hasil Prediksi: **{label}**")
                 st.info(f"Probabilitas: **{prob:.2f}%**")
-
-                # (Opsional) Tambahkan Visualisasi Probabilitas untuk Setiap Kelas
-                st.write("### Probabilitas untuk Setiap Kelas:")
-                fig, ax = plt.subplots()
-                classes = list(CLASS_LABELS.values())
-                probabilities = list(preds * 100)  # Memperoleh semua probabilitas
-                ax.bar(classes, probabilities, color='skyblue')
-                ax.set_ylim([0, 100])
-                ax.set_ylabel('Probabilitas (%)')
-                ax.set_xlabel('Kelas')
-                ax.set_title('Probabilitas Prediksi untuk Setiap Kelas')
-                st.pyplot(fig)
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
-
-# Tambahkan Tombol untuk Kembali ke Website Utama (Selalu Ditampilkan di Bawah Kiri)
-st.markdown("""
-    <div style="
-        position: fixed; 
-        bottom: 20px; 
-        left: 20px;
-    ">
-        <a href="https://www.website-utama-anda.com" target="_self">
-            <button style="
-                background-color:#4CAF50; 
-                color:white; 
-                padding:10px 20px; 
-                border:none; 
-                border-radius:5px; 
-                cursor:pointer;
-                font-size:16px;
-            ">
-                Kembali ke Website Utama
-            </button>
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
