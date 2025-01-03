@@ -128,5 +128,36 @@ if uploaded_file is not None:
             if label is not None:
                 st.success(f"Hasil Prediksi: **{label}**")
                 st.info(f"Probabilitas: **{prob:.2f}%**")
+
+                # -------------------------------------------
+                # 4.5 Menambahkan Visualisasi Probabilitas
+                # -------------------------------------------
+                st.write("Probabilitas untuk setiap kelas:")
+                prob_dict = class_labels
+                prob_values = preds[0] * 100
+                prob_labels = [class_labels[k] for k in prob_dict.keys()]
+
+                df_probs = pd.DataFrame({
+                    'Kelas': prob_labels,
+                    'Probabilitas (%)': prob_values
+                }).set_index('Kelas')
+
+                st.bar_chart(df_probs)
+
+                # -------------------------------------------
+                # 4.6 Menambahkan Opsi Download Hasil Prediksi
+                # -------------------------------------------
+                df_result = pd.DataFrame({
+                    'Label': [predicted_label],
+                    'Probabilitas (%)': [probability]
+                })
+
+                st.download_button(
+                    label="Download Hasil Prediksi",
+                    data=df_result.to_csv(index=False),
+                    file_name='hasil_prediksi.csv',
+                    mime='text/csv',
+                )
+                
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
