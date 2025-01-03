@@ -93,6 +93,24 @@ termasuk kategori **Glioma**, **Meningioma**, **No Tumor**, atau **Pituitary**.
 Silakan upload gambar MRI di bawah ini untuk deteksi.
 """)
 
+# Tambahkan Tombol untuk Kembali ke Website Utama (Selalu Ditampilkan)
+st.markdown("""
+    <a href="https://www.website-utama-anda.com" target="_self">
+        <button style="
+            background-color:#4CAF50; 
+            color:white; 
+            padding:10px 20px; 
+            border:none; 
+            border-radius:5px; 
+            cursor:pointer;
+            font-size:16px;
+            margin-top:20px;
+        ">
+            Kembali ke Website Utama
+        </button>
+    </a>
+    """, unsafe_allow_html=True)
+
 # Widget file_uploader untuk mengunggah gambar
 uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
 
@@ -114,22 +132,16 @@ if uploaded_file is not None:
                 st.success(f"Hasil Prediksi: **{label}**")
                 st.info(f"Probabilitas: **{prob:.2f}%**")
 
-        # Tambahkan tombol untuk kembali ke website utama
-        st.markdown("""
-            <a href="https://www.website-utama-anda.com" target="_self">
-                <button style="
-                    background-color:#4CAF50; 
-                    color:white; 
-                    padding:10px 20px; 
-                    border:none; 
-                    border-radius:5px; 
-                    cursor:pointer;
-                    font-size:16px;
-                    margin-top:20px;
-                ">
-                    Kembali ke Website Utama
-                </button>
-            </a>
-            """, unsafe_allow_html=True)
+                # (Opsional) Tambahkan Visualisasi Probabilitas untuk Setiap Kelas
+                st.write("### Probabilitas untuk Setiap Kelas:")
+                fig, ax = plt.subplots()
+                classes = list(CLASS_LABELS.values())
+                probabilities = preds.flatten() * 100  # Memperoleh semua probabilitas
+                ax.bar(classes, probabilities, color='skyblue')
+                ax.set_ylim([0, 100])
+                ax.set_ylabel('Probabilitas (%)')
+                ax.set_xlabel('Kelas')
+                ax.set_title('Probabilitas Prediksi untuk Setiap Kelas')
+                st.pyplot(fig)
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
