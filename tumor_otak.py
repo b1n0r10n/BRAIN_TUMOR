@@ -90,7 +90,7 @@ if uploaded_file is not None:
 
  # Tambahkan tombol untuk kembali ke website utama
         st.markdown("""
-            <a href="https://www.website-utama-anda.com" target="_self">
+            <a href="https://k11-cnn-detection.vercel.app/" target="_self">
                 <button style="
                     background-color:#4CAF50; 
                     color:white; 
