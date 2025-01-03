@@ -94,12 +94,8 @@ termasuk kategori **Glioma**, **Meningioma**, **No Tumor**, atau **Pituitary**.
 Silakan upload gambar MRI di bawah ini untuk deteksi.
 """)
 
-# Membuat dua kolom: kiri untuk tombol, kanan untuk uploader
-col1, col2 = st.columns([1, 3])  # Rasio kolom bisa disesuaikan sesuai kebutuhan
-
-with col1:
-    # Widget file_uploader untuk mengunggah gambar
-    uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
+# Widget file_uploader untuk mengunggah gambar
+uploaded_file = st.file_uploader("Upload Gambar MRI", type=["png", "jpg", "jpeg"])
 
 # Tombol untuk melakukan prediksi
 if uploaded_file is not None:
@@ -133,10 +129,9 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
 
-# Tambahkan tombol kembali di bawah uploader, aligned left
-# Menggunakan st.columns untuk memastikan tombol berada di kiri bawah
+# Tambahkan Tombol untuk Kembali ke Website Utama (Selalu Ditampilkan di Bawah Kiri)
 st.markdown("""
-    <div style="text-align: left; margin-top: 20px;">
+    <div style="position: fixed; bottom: 20px; left: 20px;">
         <a href="https://www.website-utama-anda.com" target="_self">
             <button style="
                 background-color:#4CAF50; 
@@ -147,7 +142,7 @@ st.markdown("""
                 cursor:pointer;
                 font-size:16px;
             ">
-                Kembali ke Website Utama 
+                Kembali ke Website Utama
             </button>
         </a>
     </div>
