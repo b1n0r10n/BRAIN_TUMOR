@@ -7,6 +7,9 @@ from tensorflow.keras.applications.vgg16 import preprocess_input
 from PIL import Image
 import os
 import pandas as pd  # Untuk visualisasi dan download data
+from io import BytesIO
+import openpyxl
+from openpyxl.chart import BarChart, Reference
 
 # ==========================================
 # Load Model (tanpa konfigurasi GPU)
@@ -132,39 +135,59 @@ if uploaded_file is not None:
                 st.info(f"Probabilitas: **{prob:.2f}%**")
                 
                 # -------------------------------------------
-                # 4.1 Menambahkan Visualisasi Probabilitas
+                # Visualisasi Probabilitas
                 # -------------------------------------------
                 st.write("Probabilitas untuk setiap kelas:")
-                prob_dict = CLASS_LABELS
                 prob_values = preds[0] * 100
-                prob_labels = [CLASS_LABELS[k] for k in prob_dict.keys()]
-                
-                # Membuat DataFrame untuk visualisasi
+                prob_labels = [CLASS_LABELS[k] for k in range(len(CLASS_LABELS))]
+
                 df_probs = pd.DataFrame({
                     'Kelas': prob_labels,
                     'Probabilitas (%)': prob_values
                 }).set_index('Kelas')
-                
-                # Menampilkan grafik batang
+
                 st.bar_chart(df_probs)
-                
+
                 # -------------------------------------------
-                # 4.2 Menambahkan Opsi Download Hasil Prediksi
+                # Opsi Download Hasil Prediksi dan Visualisasi (Excel)
                 # -------------------------------------------
-                st.write("Anda dapat mendownload hasil prediksi dalam bentuk file CSV.")
-                
-                # Membuat DataFrame untuk hasil prediksi
-                df_result = pd.DataFrame({
-                    'Label': [label],
-                    'Probabilitas (%)': [prob]
-                })
-                
-                # Tombol download
+                st.write("Anda dapat mendownload hasil prediksi dan probabilitas dalam bentuk file Excel dengan visualisasi.")
+
+                # Membuat workbook Excel
+                wb = openpyxl.Workbook()
+                ws = wb.active
+                ws.title = "Hasil Prediksi"
+
+                # Menambahkan hasil prediksi ke Excel
+                ws.append(["Label", "Probabilitas (%)"])
+                ws.append([label, prob])
+                ws.append([])
+                ws.append(["Kelas", "Probabilitas (%)"])
+                for index, row in df_probs.reset_index().iterrows():
+                    ws.append(row.tolist())
+
+                # Menambahkan grafik batang ke Excel
+                chart = BarChart()
+                chart.title = "Visualisasi Probabilitas"
+                chart.x_axis.title = "Kelas"
+                chart.y_axis.title = "Probabilitas (%)"
+                data = Reference(ws, min_col=2, min_row=5, max_row=4 + len(prob_labels))
+                categories = Reference(ws, min_col=1, min_row=5, max_row=4 + len(prob_labels))
+                chart.add_data(data, titles_from_data=False)
+                chart.set_categories(categories)
+                ws.add_chart(chart, "E8")  # Menempatkan grafik di sel E8
+
+                # Simpan Excel ke buffer
+                excel_buffer = BytesIO()
+                wb.save(excel_buffer)
+                excel_buffer.seek(0)
+
+                # Tombol download untuk Excel
                 st.download_button(
-                    label="Download Hasil Prediksi",
-                    data=df_result.to_csv(index=False),
-                    file_name='hasil_prediksi.csv',
-                    mime='text/csv',
+                    label="Download Hasil Prediksi dan Visualisasi (Excel)",
+                    data=excel_buffer,
+                    file_name='hasil_prediksi_visualisasi.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
